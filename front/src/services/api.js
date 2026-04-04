@@ -7,6 +7,18 @@ const apiInstance = axios.create({
   }
 });
 
+// adiciona JWT em tudo q requer autenticação
+apiInstance.interceptors.request.use((config) => {
+  const userData = localStorage.getItem('auth_user');
+  if (userData) {
+    const { token } = JSON.parse(userData);
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+  }
+  return config;
+});
+
 // Generic CRUD factory
 const createCrudEndpoints = (baseRoute) => ({
   getAll: () => apiInstance.get(`/${baseRoute}`),
@@ -21,9 +33,9 @@ export const api = {
   advogados: {
     getAll: () => apiInstance.get('/advogados'),
     create: (data) => apiInstance.post('/advogados', data),
+    createAsAdmin: (data) => apiInstance.post('/advogados/admin', data),
     update: (id, data) => apiInstance.put(`/advogados/${String(id)}`, data),
     delete: (id) => apiInstance.delete(`/advogados/${String(id)}`)
-    // Missing getById in specs: GET /advogados/{id} was not explicitly provided but we stick to the ones that were
   },
   assistentes: createCrudEndpoints('assistentes'),
   clientes: createCrudEndpoints('clientes'),

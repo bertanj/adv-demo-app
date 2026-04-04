@@ -3,7 +3,7 @@
     <div class="logo-section" :class="isOpen ? 'justify-start' : 'justify-center'">
       <span class="logo-text">{{ isOpen ? 'WISE' : 'W' }}</span>
     </div>
-    
+
     <nav class="nav-menu">
       <router-link to="/dashboard" class="nav-link group" active-class="active" :class="!isOpen ? 'justify-center !px-0' : ''">
         <span class="material-symbols-outlined nav-icon group-hover:text-blue-400 group-hover:drop-shadow-md">dashboard</span>
@@ -19,13 +19,19 @@
         <span class="material-symbols-outlined nav-icon group-hover:text-blue-400 group-hover:drop-shadow-md">groups</span>
         <span v-if="isOpen" class="nav-text group-hover:text-blue-400 transition-colors">Clientes</span>
       </router-link>
+
+      <router-link v-if="isAdmin" to="/cadastrar-advogado" class="nav-link group" active-class="active" :class="!isOpen ? 'justify-center !px-0' : ''">
+        <span class="material-symbols-outlined nav-icon group-hover:text-blue-400 group-hover:drop-shadow-md">person_add</span>
+        <span v-if="isOpen" class="nav-text group-hover:text-blue-400 transition-colors">Cadastrar Advogado</span>
+      </router-link>
     </nav>
 
     <div class="user-footer" :class="isOpen ? 'flex-row' : 'flex-col justify-center text-center'">
       <div v-if="isOpen" class="flex-1">
-        <p class="user-name text-sm text-slate-300">João Pedro</p>
+        <p class="user-name text-sm text-slate-300">{{ userName }}</p>
+        <p class="text-xs text-slate-500">{{ userRole }}</p>
       </div>
-      <router-link to="/" class="logout-link group" :class="!isOpen ? 'justify-center' : ''">
+      <router-link to="/" @click="logout" class="logout-link group" :class="!isOpen ? 'justify-center' : ''">
         <span class="material-symbols-outlined logout-icon group-hover:text-orange-400">logout</span>
         <span v-if="isOpen" class="group-hover:text-orange-400 transition-colors">Sair</span>
       </router-link>
@@ -40,6 +46,30 @@ export default {
     isOpen: {
       type: Boolean,
       default: true
+    }
+  },
+  data() {
+    return {
+      userName: '',
+      userRole: '',
+      isAdmin: false
+    }
+  },
+  mounted() {
+    this.carregarUsuario();
+  },
+  methods: {
+    carregarUsuario() {
+      const userData = localStorage.getItem('auth_user');
+      if (userData) {
+        const { user } = JSON.parse(userData);
+        this.userName = user?.name || 'Usuário';
+        this.userRole = user?.role || '';
+        this.isAdmin = user?.role === 'ADMIN';
+      }
+    },
+    logout() {
+      localStorage.removeItem('auth_user');
     }
   }
 }

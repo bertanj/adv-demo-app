@@ -20,17 +20,21 @@ public class AdvogadoService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    // Método para Salvar (com Criptografia)
+    // Cadastro público — sempre ADVOGADO
     public Advogado salvar(Advogado advogado) {
-        // 1. Criptografa a senha antes de enviar para o banco
         String senhaCriptografada = passwordEncoder.encode(advogado.getPassword());
         advogado.setPassword(senhaCriptografada);
+        advogado.setRole(UserRole.ADVOGADO);
+        return repository.save(advogado);
+    }
 
-        // 2. Define o papel padrão como ADMIN para advogados
+    // Cadastro feito por ADMIN — pode definir role
+    public Advogado salvarComoAdmin(Advogado advogado) {
+        String senhaCriptografada = passwordEncoder.encode(advogado.getPassword());
+        advogado.setPassword(senhaCriptografada);
         if (advogado.getRole() == null) {
-            advogado.setRole(UserRole.ADMIN);
+            advogado.setRole(UserRole.ADVOGADO);
         }
-
         return repository.save(advogado);
     }
 

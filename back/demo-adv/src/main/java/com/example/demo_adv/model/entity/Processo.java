@@ -1,6 +1,7 @@
 package com.example.demo_adv.model.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -29,11 +30,16 @@ public class Processo {
 
     private String status;
 
+    @ManyToOne
+    @JoinColumn(name = "advogado_id")
+    @JsonIgnoreProperties({"password", "cpf", "username"})
+    private Advogado advogado;
+
     @ManyToMany
     @JoinTable(
-            name = "processo_assistente", // O nome da tabela que será criada no Postgres
-            joinColumns = @JoinColumn(name = "processo_id"), // Coluna com o ID do processo
-            inverseJoinColumns = @JoinColumn(name = "assistente_id") // Coluna com o ID do assistente
+            name = "processo_assistente",
+            joinColumns = @JoinColumn(name = "processo_id"),
+            inverseJoinColumns = @JoinColumn(name = "assistente_id")
     )
     private List<Assistente> assistentesDesignados;
 }

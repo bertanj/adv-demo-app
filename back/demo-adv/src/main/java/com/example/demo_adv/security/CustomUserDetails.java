@@ -24,10 +24,10 @@ public class CustomUserDetails implements UserDetailsService {
             throw new UsernameNotFoundException("Usuário não encontrado");
         }
 
-        return User.builder()
-                .username(advogado.getEmail())
-                .password(advogado.getPassword())
-                .roles(advogado.getRole().name()) // ADMIN ou USER
-                .build();
+        return new User(
+                advogado.getEmail(),
+                advogado.getPassword(),
+                advogado.getRole().getAuthorities()
+        );
     }
 }

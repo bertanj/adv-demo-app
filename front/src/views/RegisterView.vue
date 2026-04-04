@@ -75,10 +75,9 @@ export default {
           name: this.name,
           cpf: this.cpf,
           email: this.email,
-          username: this.email, // using email as username
+          username: this.email,
           oab: this.oab,
-          password: this.password,
-          role: 'ADMIN'
+          password: this.password
         };
         const response = await api.advogados.create(payload);
         

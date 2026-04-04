@@ -56,9 +56,8 @@ export default {
           username: this.email, 
           password: this.password 
         });
-        // Salva dados do usuário retornados pelo backend
+        // Salva token JWT e dados do usuário
         localStorage.setItem('auth_user', JSON.stringify(response.data));
-        localStorage.setItem('auth_token', btoa(this.email + ':' + this.password));
         this.$router.push('/dashboard');
       } catch (error) {
         console.error("Erro no login", error);

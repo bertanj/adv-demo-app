@@ -17,16 +17,22 @@ public class AdvogadoController {
     @Autowired
     private AdvogadoService advogadoService;
 
+    // Cadastro público — sempre cria com role ADVOGADO
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Advogado criarAdvogado(@RequestBody Advogado advogado) {
-        // Agora o 'salvar' da Service será executado, criptografando a senha
         return advogadoService.salvar(advogado);
+    }
+
+    // Cadastro feito por ADMIN — pode definir role
+    @PostMapping("/admin")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Advogado criarAdvogadoComoAdmin(@RequestBody Advogado advogado) {
+        return advogadoService.salvarComoAdmin(advogado);
     }
 
     @GetMapping
     public List<Advogado> listarAdvogados() {
-        // Você pode criar esse método na Service também para manter o padrão
         return advogadoService.listarTodos();
     }
 

@@ -4,6 +4,7 @@ import RegisterView from './views/RegisterView.vue'
 import DashboardView from './views/DashboardView.vue'
 import ClientesView from './views/ClientesView.vue'
 import ProcessosView from './views/ProcessosView.vue'
+import CadastrarAdvogadoView from './views/CadastrarAdvogadoView.vue'
 
 const routes = [
   {
@@ -30,6 +31,11 @@ const routes = [
     path: '/processos',
     name: 'processos',
     component: ProcessosView
+  },
+  {
+    path: '/cadastrar-advogado',
+    name: 'cadastrar-advogado',
+    component: CadastrarAdvogadoView
   }
 ]
 
