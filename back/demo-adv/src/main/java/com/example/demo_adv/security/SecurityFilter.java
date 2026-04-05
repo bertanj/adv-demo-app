@@ -1,6 +1,7 @@
 package com.example.demo_adv.security;
 
-import com.example.demo_adv.model.service.AdvogadoService;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,7 +21,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
-import java.util.List;
+import com.example.demo_adv.model.service.AdvogadoService;
 
 @Configuration
 @EnableWebSecurity
@@ -42,11 +43,11 @@ public class SecurityFilter {
                     auth.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll();
                     auth.requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll();
 
-                    // Rotas exclusivas de ADMIN (gerenciar advogados)
+                    auth.requestMatchers(HttpMethod.GET, "/advogados").authenticated();
+                    auth.requestMatchers(HttpMethod.PUT, "/advogados/**").authenticated();
+                    auth.requestMatchers(HttpMethod.DELETE, "/advogados/**").authenticated();
+
                     auth.requestMatchers(HttpMethod.POST, "/advogados/admin").hasRole("ADMIN");
-                    auth.requestMatchers(HttpMethod.GET, "/advogados").hasRole("ADMIN");
-                    auth.requestMatchers(HttpMethod.PUT, "/advogados/**").hasRole("ADMIN");
-                    auth.requestMatchers(HttpMethod.DELETE, "/advogados/**").hasRole("ADMIN");
 
                     // Demais rotas exigem autenticação (qualquer role válida)
                     auth.anyRequest().authenticated();
