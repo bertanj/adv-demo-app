@@ -1,15 +1,17 @@
 package com.example.demo_adv.model.service;
 
-import com.example.demo_adv.model.entity.Advogado;
-import com.example.demo_adv.model.repositores.AdvogadoRepository;
-import com.example.demo_adv.model.UserRole; // Certifique-se de que o Enum UserRole existe
+import java.util.List;
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import com.example.demo_adv.model.DTOs.AdvogadoRequestDTO;
+import com.example.demo_adv.model.DTOs.AdvogadoResponseDTO;
+import com.example.demo_adv.model.UserRole;
+import com.example.demo_adv.model.entity.Advogado;
+import com.example.demo_adv.model.repositores.AdvogadoRepository;
 
 @Service
 public class AdvogadoService {
@@ -21,26 +23,40 @@ public class AdvogadoService {
     private PasswordEncoder passwordEncoder;
 
     // Cadastro público — sempre ADVOGADO
-    public Advogado salvar(Advogado advogado) {
-        String senhaCriptografada = passwordEncoder.encode(advogado.getPassword());
-        advogado.setPassword(senhaCriptografada);
+    public AdvogadoResponseDTO salvar(AdvogadoRequestDTO dto) {
+        Advogado advogado = new Advogado();
+        advogado.setCpf(dto.getCpf());
+        advogado.setName(dto.getName());
+        advogado.setUsername(dto.getUsername());
+        advogado.setEmail(dto.getEmail());
+        advogado.setPassword(passwordEncoder.encode(dto.getPassword()));
+        advogado.setOab(dto.getOab());
         advogado.setRole(UserRole.ADVOGADO);
-        return repository.save(advogado);
+        
+        Advogado saved = repository.save(advogado);
+        return convertToResponseDTO(saved);
     }
 
     // Cadastro feito por ADMIN — pode definir role
-    public Advogado salvarComoAdmin(Advogado advogado) {
-        String senhaCriptografada = passwordEncoder.encode(advogado.getPassword());
-        advogado.setPassword(senhaCriptografada);
-        if (advogado.getRole() == null) {
-            advogado.setRole(UserRole.ADVOGADO);
-        }
-        return repository.save(advogado);
+    public AdvogadoResponseDTO salvarComoAdmin(AdvogadoRequestDTO dto) {
+        Advogado advogado = new Advogado();
+        advogado.setCpf(dto.getCpf());
+        advogado.setName(dto.getName());
+        advogado.setUsername(dto.getUsername());
+        advogado.setEmail(dto.getEmail());
+        advogado.setPassword(passwordEncoder.encode(dto.getPassword()));
+        advogado.setOab(dto.getOab());
+        advogado.setRole(UserRole.ADVOGADO);
+        
+        Advogado saved = repository.save(advogado);
+        return convertToResponseDTO(saved);
     }
 
     // Método para Listar (usado no GET da Controller)
-    public List<Advogado> listarTodos() {
-        return repository.findAll();
+    public List<AdvogadoResponseDTO> listarTodos() {
+        return repository.findAll().stream()
+                .map(this::convertToResponseDTO)
+                .toList();
     }
 
     // Método para Buscar por Email (usado no Login/CustomUserDetails)
@@ -49,24 +65,37 @@ public class AdvogadoService {
     }
 
     // Método para Atualizar (usado no PUT da Controller)
-    public Advogado atualizar(UUID id, Advogado atualizado) {
+    public AdvogadoResponseDTO atualizar(UUID id, AdvogadoRequestDTO dto) {
         return repository.findById(id).map(advogado -> {
-            advogado.setName(atualizado.getName());
-            advogado.setEmail(atualizado.getEmail());
-            advogado.setOab(atualizado.getOab());
-            advogado.setUsername(atualizado.getUsername());
+            advogado.setName(dto.getName());
+            advogado.setEmail(dto.getEmail());
+            advogado.setOab(dto.getOab());
+            advogado.setUsername(dto.getUsername());
 
             // Se a senha for enviada na atualização, precisa criptografar de novo
-            if (atualizado.getPassword() != null && !atualizado.getPassword().isEmpty()) {
-                advogado.setPassword(passwordEncoder.encode(atualizado.getPassword()));
+            if (dto.getPassword() != null && !dto.getPassword().isEmpty()) {
+                advogado.setPassword(passwordEncoder.encode(dto.getPassword()));
             }
 
-            return repository.save(advogado);
+            Advogado saved = repository.save(advogado);
+            return convertToResponseDTO(saved);
         }).orElseThrow(() -> new RuntimeException("Advogado não encontrado com o ID: " + id));
     }
 
     // Método para Deletar (usado no DELETE da Controller)
     public void deletar(UUID id) {
         repository.deleteById(id);
+    }
+
+    private AdvogadoResponseDTO convertToResponseDTO(Advogado advogado) {
+        return new AdvogadoResponseDTO(
+                advogado.getId(),
+                advogado.getCpf(),
+                advogado.getName(),
+                advogado.getUsername(),
+                advogado.getEmail(),
+                advogado.getOab(),
+                advogado.getRole().toString()
+        );
     }
 }
