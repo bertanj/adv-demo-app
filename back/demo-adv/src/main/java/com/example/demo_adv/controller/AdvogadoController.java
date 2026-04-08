@@ -21,6 +21,8 @@ import com.example.demo_adv.model.DTOs.AdvogadoRequestDTO;
 import com.example.demo_adv.model.DTOs.AdvogadoResponseDTO;
 import com.example.demo_adv.model.service.AdvogadoService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/advogados")
 public class AdvogadoController {
@@ -33,14 +35,14 @@ public class AdvogadoController {
     // Cadastro público — sempre cria com role ADVOGADO
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public AdvogadoResponseDTO criarAdvogado(@RequestBody AdvogadoRequestDTO advogado) {
+    public AdvogadoResponseDTO criarAdvogado(@Valid @RequestBody AdvogadoRequestDTO advogado) {
         return advogadoService.salvar(advogado);
     }
 
     // Cadastro feito por ADMIN — pode definir role
     @PostMapping("/admin")
     @ResponseStatus(HttpStatus.CREATED)
-    public AdvogadoResponseDTO criarAdvogadoComoAdmin(@RequestBody AdvogadoRequestDTO advogado) {
+    public AdvogadoResponseDTO criarAdvogadoComoAdmin(@Valid @RequestBody AdvogadoRequestDTO advogado) {
         return advogadoService.salvarComoAdmin(advogado);
     }
 
@@ -51,7 +53,7 @@ public class AdvogadoController {
     }
 
     @PutMapping("/{id}")
-    public AdvogadoResponseDTO atualizar(@PathVariable UUID id, @RequestBody AdvogadoRequestDTO advogadoAtualizado) {
+    public AdvogadoResponseDTO atualizar(@PathVariable UUID id, @Valid @RequestBody AdvogadoRequestDTO advogadoAtualizado) {
         return advogadoService.atualizar(id, advogadoAtualizado);
     }
 

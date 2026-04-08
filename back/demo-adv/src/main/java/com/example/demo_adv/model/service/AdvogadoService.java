@@ -24,6 +24,9 @@ public class AdvogadoService {
 
     // Cadastro público — sempre ADVOGADO
     public AdvogadoResponseDTO salvar(AdvogadoRequestDTO dto) {
+        if (dto.getPassword() == null || dto.getPassword().isBlank()) {
+            throw new RuntimeException("Senha é obrigatória!");
+        }
         Advogado advogado = new Advogado();
         advogado.setCpf(dto.getCpf());
         advogado.setName(dto.getName());
@@ -39,6 +42,9 @@ public class AdvogadoService {
 
     // Cadastro feito por ADMIN — pode definir role
     public AdvogadoResponseDTO salvarComoAdmin(AdvogadoRequestDTO dto) {
+        if (dto.getPassword() == null || dto.getPassword().isBlank()) {
+            throw new RuntimeException("Senha é obrigatória!");
+        }
         Advogado advogado = new Advogado();
         advogado.setCpf(dto.getCpf());
         advogado.setName(dto.getName());
