@@ -20,28 +20,48 @@ const routes = [
   {
     path: '/dashboard',
     name: 'dashboard',
-    component: DashboardView
+    component: DashboardView,
+    meta: { requiresAuth: true }
   },
   {
     path: '/clientes',
     name: 'clientes',
-    component: ClientesView
+    component: ClientesView,
+    meta: { requiresAuth: true }
   },
   {
     path: '/processos',
     name: 'processos',
-    component: ProcessosView
+    component: ProcessosView,
+    meta: { requiresAuth: true }
   },
   {
     path: '/cadastrar-advogado',
     name: 'cadastrar-advogado',
-    component: CadastrarAdvogadoView
+    component: CadastrarAdvogadoView,
+    meta: { requiresAuth: true, requiresAdmin: true }
   }
 ]
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
+})
+
+router.beforeEach((to, from, next) => {
+  const authData = localStorage.getItem('auth_user')
+  if (to.meta.requiresAuth && !authData) {
+    next('/')
+  } else if (to.meta.requiresAdmin) {
+    const { user } = JSON.parse(authData)
+    if (user?.role !== 'ADMIN') {
+      next('/dashboard')
+    } else {
+      next()
+    }
+  } else {
+    next()
+  }
 })
 
 export default router
