@@ -20,6 +20,11 @@
         <span v-if="isOpen" class="nav-text group-hover:text-blue-400 transition-colors">Clientes</span>
       </router-link>
 
+      <router-link to="/assistentes" class="nav-link group" active-class="active" :class="!isOpen ? 'justify-center !px-0' : ''">
+        <span class="material-symbols-outlined nav-icon group-hover:text-blue-400 group-hover:drop-shadow-md">badge</span>
+        <span v-if="isOpen" class="nav-text group-hover:text-blue-400 transition-colors">Assistentes</span>
+      </router-link>
+
       <router-link v-if="isAdmin" to="/cadastrar-advogado" class="nav-link group" active-class="active" :class="!isOpen ? 'justify-center !px-0' : ''">
         <span class="material-symbols-outlined nav-icon group-hover:text-blue-400 group-hover:drop-shadow-md">person_add</span>
         <span v-if="isOpen" class="nav-text group-hover:text-blue-400 transition-colors">Cadastrar Advogado</span>

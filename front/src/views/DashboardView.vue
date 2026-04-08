@@ -84,7 +84,7 @@ export default {
           const processos = processosRes.value.data;
           this.totalProcessos = processos.length;
           this.processosAtivos = processos.filter(p =>
-            p.status && p.status.toLowerCase().includes('ativo')
+            p.status && p.status.toLowerCase() === 'ativo'
           ).length;
         }
 

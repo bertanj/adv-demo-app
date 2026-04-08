@@ -2,14 +2,14 @@
   <div class="p-8">
     <div class="flex justify-between items-center mb-8">
       <h2 class="text-3xl font-bold">Gestão de Clientes</h2>
-      <button @click="showForm = !showForm" class="bg-orange-600 text-white px-6 py-2 rounded-lg font-bold">
+      <button @click="showForm ? limparForm() : (showForm = true)" class="bg-orange-600 text-white px-6 py-2 rounded-lg font-bold">
         {{ showForm ? 'Cancelar' : '+ Novo Cliente' }}
       </button>
     </div>
 
     <!-- Novo Cliente Form -->
     <div v-if="showForm" class="bg-white p-6 rounded-xl shadow-sm mb-8 border border-slate-200">
-      <h3 class="text-xl font-bold mb-4">Adicionar Novo Cliente</h3>
+      <h3 class="text-xl font-bold mb-4">{{ editandoId ? 'Editar Cliente' : 'Adicionar Novo Cliente' }}</h3>
       <form @submit.prevent="salvarCliente" class="flex gap-4 items-end">
         <div class="flex-1">
           <label class="block text-sm font-semibold mb-1">Nome Completo</label>
@@ -19,7 +19,7 @@
           <label class="block text-sm font-semibold mb-1">CPF</label>
           <input v-model="formData.cpf" type="text" required class="w-full border rounded-lg px-4 py-2" placeholder="000.000.000-00" />
         </div>
-        <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold h-[42px]">Salvar</button>
+        <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold h-[42px]">{{ editandoId ? 'Atualizar' : 'Salvar' }}</button>
       </form>
     </div>
 
@@ -36,7 +36,7 @@
           <td class="p-4 font-semibold">{{ cliente.name }}</td>
           <td class="p-4 text-slate-500">{{ cliente.cpf }}</td>
           <td class="p-4 text-center">
-            <button class="text-blue-800 font-bold mr-4">Editar</button>
+            <button @click="editarCliente(cliente)" class="text-blue-800 font-bold mr-4">Editar</button>
             <button @click="excluirCliente(cliente.id)" class="text-red-600 font-bold">Excluir</button>
           </td>
         </tr>
@@ -57,6 +57,7 @@ export default {
     return { 
       clientes: [],
       showForm: false,
+      editandoId: null,
       formData: {
         name: '',
         cpf: ''
@@ -75,6 +76,19 @@ export default {
         console.error("Erro ao carregar clientes", e); 
       }
     },
+    editarCliente(cliente) {
+      this.editandoId = cliente.id;
+      this.formData = {
+        name: cliente.name || '',
+        cpf: cliente.cpf || ''
+      };
+      this.showForm = true;
+    },
+    limparForm() {
+      this.editandoId = null;
+      this.formData = { name: '', cpf: '' };
+      this.showForm = false;
+    },
     async salvarCliente() {
       try {
         const payload = {
@@ -83,12 +97,16 @@ export default {
             username: null,
             email: null,
             password: null,
-            advogado: null 
+            advogado: null
         };
-        const response = await api.clientes.create(payload);
+        let response;
+        if (this.editandoId) {
+          response = await api.clientes.update(this.editandoId, payload);
+        } else {
+          response = await api.clientes.create(payload);
+        }
         if (response.status === 201 || response.status === 200) {
-          this.formData = { name: '', cpf: '' };
-          this.showForm = false;
+          this.limparForm();
           this.carregarClientes();
         }
       } catch (e) {

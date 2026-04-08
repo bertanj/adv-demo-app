@@ -5,6 +5,7 @@ import DashboardView from './views/DashboardView.vue'
 import ClientesView from './views/ClientesView.vue'
 import ProcessosView from './views/ProcessosView.vue'
 import CadastrarAdvogadoView from './views/CadastrarAdvogadoView.vue'
+import AssistentesView from './views/AssistentesView.vue'
 
 const routes = [
   {
@@ -33,6 +34,12 @@ const routes = [
     path: '/processos',
     name: 'processos',
     component: ProcessosView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/assistentes',
+    name: 'assistentes',
+    component: AssistentesView,
     meta: { requiresAuth: true }
   },
   {
