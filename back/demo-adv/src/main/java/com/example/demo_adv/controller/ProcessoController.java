@@ -23,6 +23,8 @@ import com.example.demo_adv.model.entity.Advogado;
 import com.example.demo_adv.model.service.AdvogadoService;
 import com.example.demo_adv.model.service.ProcessoService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/processos")
 @CrossOrigin(origins = "http://localhost:8081")
@@ -35,7 +37,7 @@ public class ProcessoController {
     private AdvogadoService advogadoService;
 
     @PostMapping
-    public ResponseEntity<ProcessoResponseDTO> criar(@RequestBody ProcessoRequestDTO processo, Authentication authentication) {
+    public ResponseEntity<ProcessoResponseDTO> criar(@Valid @RequestBody ProcessoRequestDTO processo, Authentication authentication) {
         String email = authentication.getName();
         Advogado advogado = advogadoService.buscarPorEmail(email);
         if (advogado == null) {
@@ -61,7 +63,7 @@ public class ProcessoController {
     }
 
     @PutMapping("/{id}")
-    public ProcessoResponseDTO atualizar(@PathVariable UUID id, @RequestBody ProcessoRequestDTO processoAtualizado) {
+    public ProcessoResponseDTO atualizar(@PathVariable UUID id, @Valid @RequestBody ProcessoRequestDTO processoAtualizado) {
         return processoService.atualizar(id, processoAtualizado);
     }
 
